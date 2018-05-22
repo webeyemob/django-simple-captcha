@@ -26,6 +26,12 @@ except ImportError:
 DISTANCE_FROM_TOP = 4
 
 
+def get_front_color():
+    cols = ['#e0861a', '#483D8B', '#1E90FF', '#aa2116', '#6d8346', '#949494', '#508a88', '#3c3645', '#375830', '#6f599c', '#121a2a']
+    i = random.randint(0, len(cols)-1)
+    return cols[i]
+
+
 def getsize(font, text):
     if hasattr(font, 'getoffset'):
         return tuple([x + y for x, y in zip(font.getsize(text), font.getoffset(text))])
@@ -78,7 +84,8 @@ def captcha_image(request, key, scale=1):
         else:
             charlist.append(char)
     for char in charlist:
-        fgimage = Image.new('RGB', size, settings.CAPTCHA_FOREGROUND_COLOR)
+        # fgimage = Image.new('RGB', size, settings.CAPTCHA_FOREGROUND_COLOR)
+        fgimage = Image.new('RGB', size, get_front_color())
         charimage = Image.new('L', getsize(font, ' %s ' % char), '#000000')
         chardraw = ImageDraw.Draw(charimage)
         chardraw.text((0, 0), ' %s ' % char, font=font, fill='#ffffff')
@@ -102,9 +109,9 @@ def captcha_image(request, key, scale=1):
     draw = ImageDraw.Draw(image)
 
     for f in settings.noise_functions():
-        draw = f(draw, image)
+        draw = f(draw, image, get_front_color())
     for f in settings.filter_functions():
-        image = f(image)
+        image = f(image, get_front_color())
 
     out = StringIO()
     image.save(out, "PNG")

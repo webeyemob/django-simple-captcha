@@ -22,7 +22,7 @@ def math_challenge():
 
 
 def random_char_challenge():
-    chars, ret = u('abcdefghijklmnopqrstuvwxyz'), u('')
+    chars, ret = u('abcdefghjkmnprstuvwxyz'), u('')
     for i in range(settings.CAPTCHA_LENGTH):
         ret += random.choice(chars)
     return ret.upper(), ret
@@ -62,27 +62,38 @@ def huge_words_and_punctuation_challenge():
     return word.upper(), word.lower()
 
 
-def noise_arcs(draw, image):
+def noise_arcs(draw, image, front_color):
     size = image.size
-    draw.arc([-20, -20, size[0], 20], 0, 295, fill=settings.CAPTCHA_FOREGROUND_COLOR)
-    draw.line([-20, 20, size[0] + 20, size[1] - 20], fill=settings.CAPTCHA_FOREGROUND_COLOR)
-    draw.line([-20, 0, size[0] + 20, size[1]], fill=settings.CAPTCHA_FOREGROUND_COLOR)
+    draw.arc([-random.randint(0, size[0]), -random.randint(0, size[0]), size[0], random.randint(0, size[0])], 0, 295, fill=front_color)
+    draw.arc([-random.randint(0, size[0]), -random.randint(0, size[0]), size[0], random.randint(0, size[0])], 0, 295, fill=front_color)
+    draw.line([-random.randint(0, size[0]), random.randint(0, size[0]), size[0] + random.randint(0, size[0]), size[1] - 20], fill=front_color)
+    draw.line([-random.randint(0, size[0]), random.randint(0, size[0]), size[0] + random.randint(0, size[0]), size[1]], fill=front_color)
+    draw.line([-random.randint(0, size[0]), random.randint(0, size[0]), size[0] + random.randint(0, size[0]), size[1]], fill=front_color)
     return draw
 
 
-def noise_dots(draw, image):
+def noise_dots(draw, image, front_color):
     size = image.size
-    for p in range(int(size[0] * size[1] * 0.1)):
-        draw.point((random.randint(0, size[0]), random.randint(0, size[1])), fill=settings.CAPTCHA_FOREGROUND_COLOR)
+    for p in range(int(size[1])/4):
+        x = random.randint(0, size[0])
+        y = random.randint(0, size[1])
+        p = random.randint(0, size[0])
+        q = random.randint(0, size[1])
+        draw.line([x, y, x+2, y+5], fill=front_color)
+        draw.line([x, y, x+2, y], fill=front_color)
+        draw.line([p, q, p+5, q+2], fill=front_color)
     return draw
 
 
-def noise_null(draw, image):
+def noise_null(draw, image, front_color):
     return draw
 
 
-def post_smooth(image):
-    from PIL import ImageFilter
+def post_smooth(image, front_color):
+    try:
+        import ImageFilter
+    except ImportError:
+        from PIL import ImageFilter
     return image.filter(ImageFilter.SMOOTH)
 
 
