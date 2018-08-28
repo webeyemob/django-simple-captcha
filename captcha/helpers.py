@@ -74,7 +74,7 @@ def noise_arcs(draw, image, front_color):
 
 def noise_dots(draw, image, front_color):
     size = image.size
-    for p in range(int(size[1])/4):
+    for p in range(int(size[1])//4):
         x = random.randint(0, size[0])
         y = random.randint(0, size[1])
         p = random.randint(0, size[0])
